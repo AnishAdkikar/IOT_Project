@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<body>
+    {% if registered_username %}
+        <h2>Welcome to the Home Page</h2>
+        <p>You are logged in as: {{ registered_username }}</p>
+        <!-- Your other content goes here -->
+
+        {% if Items %}
+            <h3>Sections</h3>
+            {% for item in Items %}
+                <h4>{{ item.Section }}</h4>
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>Date of harvest</th>
+                            <th>Temperature</th>
+                            <th>CO2</th>
+                            <th>Weight</th>
+                            <th>Pressure</th>
+                            <th>Expire Date</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ item.Date_of_harvest }}</td>
+                            <td>{{ item.Temp }}</td>
+                            <td>{{ item.CO2 }}</td>
+                            <td>{{ item.Weight }}</td>
+                            <td>{{ item.Pressure }}</td>
+                            <td>{{ item.Est_date_of_exp }}</td>
+                        </tr> 
+                    </tbody>
+                </table>
+            {% endfor %}
+        {% endif %}
+    <a href="{% url 'logout_view' %}"><button>logout</button></a>         
+    {% else %}
+        <h2>Welcome to the Home Page</h2>
+        <p>You are not logged in. Please log in or register.</p>
+        <a href="{% url 'login' %}"><button>Login</button></a>
+        <a href="{% url 'register' %}"><button>Register</button></a>
+    {% endif %}
+</body>
+</html>
