@@ -1,18 +1,117 @@
-<!-- registration/register.html -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>User Registration</title>
-</head>
-<body>
-    <h2>User Registration</h2>
-    <form method="post">
+    <style>
+      body {
+        background-color: #e9ecef;
+        color: #495057;
+        font-family: "Arial", sans-serif;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .registration-container {
+        background-color: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        width: 350px;
+        margin: auto;
+      }
+
+      h2 {
+        color: #2c3e50;
+        text-align: center;
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      input[type="text"],
+      input[type="password"] {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+      }
+
+      button {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        border-radius: 5px;
+        width: 100%;
+        font-size: 16px;
+        transition: background-color 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      button:hover {
+        background-color: #218838;
+      }
+
+      .form-hints {
+        background-color: #f8f9fa;
+        border-left: 3px solid #28a745;
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="registration-container">
+      <h2>User Registration</h2>
+      <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
+        <div class="form-group">
+          <label for="username">Username:</label>
+          <input type="text" id="username" name="username" required />
+        </div>
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" required />
+        </div>
+        <div class="form-group">
+          <label for="confirm_password">Password confirmation:</label>
+          <input
+            type="password"
+            id="confirm_password"
+            name="confirm_password"
+            required
+          />
+        </div>
+        <div class="form-hints">
+          <p>
+            Your password can't be too similar to your other personal
+            information.
+          </p>
+          <p>Your password must contain at least 8 characters.</p>
+          <p>Your password can't be a commonly used password.</p>
+          <p>Your password can't be entirely numeric.</p>
+        </div>
         <button type="submit">Register</button>
-    </form>
-</body>
+      </form>
+    </div>
+  </body>
 </html>
