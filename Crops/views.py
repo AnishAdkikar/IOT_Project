@@ -3,6 +3,9 @@ from django.contrib import messages
 from datetime import timedelta, datetime
 import joblib
 from .models import Wheat
+from .config import ACCOUNT_SID,AUTH_TOKEN,PHONE_NO
+from twilio.rest import Client
+
 # After every 7 days the readings are updated
 def periodic_update(request):
     if request.method == 'POST':
@@ -51,10 +54,24 @@ def add_stock(request):
     
 def alerts(request):
     custom_message = request.GET.get('custom_message', None)
+    Phone = request.GET.get('Phone', None)
 
     if custom_message:
-        messages.warning(request, custom_message)
-    return HttpResponse("Alert Recieved")
+        account_sid = ACCOUNT_SID
+        auth_token  = AUTH_TOKEN
+
+        client = Client(account_sid, auth_token)
+
+        message = client.messages.create(
+            to=f"+91{Phone}",
+            from_=PHONE_NO,
+            body=custom_message)
+        return HttpResponse(custom_message)
+    else:
+        return HttpResponse("No Message in the alert!!")
+
+
+        
 
 def pred_price(uid_value):
    model = joblib.load('price_pred.pkl')
