@@ -5,6 +5,8 @@ import joblib
 from .models import Wheat
 from .config import ACCOUNT_SID,AUTH_TOKEN,PHONE_NO
 from twilio.rest import Client
+from pandas import read_csv
+from statsmodels.tsa.arima.model import ARIMA
 
 # After every 7 days the readings are updated
 def periodic_update(request):
@@ -73,23 +75,19 @@ def alerts(request):
 
         
 
-def pred_price(uid_value):
-   model = joblib.load('price_pred.pkl')
-   unique_section_ids = Wheat.objects.filter(Uid=uid_value).values_list('Section',flat=True).distinct()
-   Pred_price_dict = {}
-   for section_id in unique_section_ids:
-        try:
-            item = Wheat.objects.get(Uid=uid_value, Section=section_id)
-        except Wheat.DoesNotExist:
-            item = None
-        predicted_price = model.predict(item.Date_of_harvest)
-        Pred_price_dict[section_id] = predicted_price
-   return Pred_price_dict
+def pred_price():
+    series = read_csv('wheat_df-Update.csv', header=0, parse_dates=[0], index_col=0)
+    series.index = series.index.to_period('D')
+    model = ARIMA(series, order=(5, 1, 0))
+    model_fit = model.fit()
+    results = model_fit.forecast()
+    return round(results[0], 2)
+
 
 def home(request):
     registered_username = request.session.get('registered_username')
-    # section_prices = pred_price(registered_username)
+    price = pred_price()
     Items = Wheat.objects.filter(Uid=registered_username)
-    return render(request, 'home.html', {'registered_username': registered_username,'Items':Items})
+    return render(request, 'home.html', {'registered_username': registered_username,'Items':Items,'price':price})
 
 
