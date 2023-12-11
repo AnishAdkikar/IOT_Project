@@ -7,8 +7,8 @@ from .config import ACCOUNT_SID,AUTH_TOKEN,PHONE_NO
 from twilio.rest import Client
 from pandas import read_csv
 from statsmodels.tsa.arima.model import ARIMA
+import requests
 
-# After every 7 days the readings are updated
 def periodic_update(request):
     if request.method == 'POST':
         Uid_value = request.POST.get('Uid')
@@ -18,7 +18,7 @@ def periodic_update(request):
         CO2_value = request.POST.get('CO2')
         Weight_value = request.POST.get('Weight')
 
-        Items = Wheat.objects.filter(uid=uid_value,section_id=section_id_value)
+        Items = Wheat.objects.filter(Uid=Uid_value,Section=Section_value)
 
         if Items.exists():
             for item in Items:
@@ -26,7 +26,58 @@ def periodic_update(request):
                 item.CO2 = CO2_value
                 item.Pressure = Pressure_value
                 item.Weight = Weight_value
-                your_object.save()
+                item.save()
+        temperature_threshold = 50
+        co2_threshold = 500
+        pressure_threshold = 500
+        if int(Temp_value) > temperature_threshold:
+            api_url = 'http://127.0.0.1:8000/alert/'
+            custom_message = 'Alert_Wheat_Temperature'
+            phone_number = '8073855979'
+
+            payload = {
+                'custom_message': custom_message,
+                'Phone': phone_number
+            }
+
+            try:
+                response = requests.get(api_url, params=payload)
+                print(f'API Response: {response.status_code} - {response.text}')
+
+            except Exception as e:
+                print(f'Error making API request: {e}')
+        if int(Pressure_value) > pressure_threshold:
+            api_url = 'http://127.0.0.1:8000/alert/'
+            custom_message = 'Alert_Wheat_Pressure'
+            phone_number = '8073855979'
+
+            payload = {
+                'custom_message': custom_message,
+                'Phone': phone_number
+            }
+
+            try:
+                response = requests.get(api_url, params=payload)
+                print(f'API Response: {response.status_code} - {response.text}')
+
+            except Exception as e:
+                print(f'Error making API request: {e}')
+        if int(CO2_value) > co2_threshold:
+            api_url = 'http://127.0.0.1:8000/alert/'
+            custom_message = 'Alert_Wheat_CO2_level'
+            phone_number = '8073855979'
+
+            payload = {
+                'custom_message': custom_message,
+                'Phone': phone_number
+            }
+
+            try:
+                response = requests.get(api_url, params=payload)
+                print(f'API Response: {response.status_code} - {response.text}')
+
+            except Exception as e:
+                print(f'Error making API request: {e}')
     return HttpResponse("Stock updated")
 
 def add_stock(request):
