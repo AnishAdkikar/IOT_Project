@@ -27,57 +27,7 @@ def periodic_update(request):
                 item.Pressure = Pressure_value
                 item.Weight = Weight_value
                 item.save()
-        temperature_threshold = 50
-        co2_threshold = 500
-        pressure_threshold = 500
-        if int(Temp_value) > temperature_threshold:
-            api_url = 'http://127.0.0.1:8000/alert/'
-            custom_message = 'Alert_Wheat_Temperature'
-            phone_number = '8073855979'
-
-            payload = {
-                'custom_message': custom_message,
-                'Phone': phone_number
-            }
-
-            try:
-                response = requests.get(api_url, params=payload)
-                print(f'API Response: {response.status_code} - {response.text}')
-
-            except Exception as e:
-                print(f'Error making API request: {e}')
-        if int(Pressure_value) > pressure_threshold:
-            api_url = 'http://127.0.0.1:8000/alert/'
-            custom_message = 'Alert_Wheat_Pressure'
-            phone_number = '8073855979'
-
-            payload = {
-                'custom_message': custom_message,
-                'Phone': phone_number
-            }
-
-            try:
-                response = requests.get(api_url, params=payload)
-                print(f'API Response: {response.status_code} - {response.text}')
-
-            except Exception as e:
-                print(f'Error making API request: {e}')
-        if int(CO2_value) > co2_threshold:
-            api_url = 'http://127.0.0.1:8000/alert/'
-            custom_message = 'Alert_Wheat_CO2_level'
-            phone_number = '8073855979'
-
-            payload = {
-                'custom_message': custom_message,
-                'Phone': phone_number
-            }
-
-            try:
-                response = requests.get(api_url, params=payload)
-                print(f'API Response: {response.status_code} - {response.text}')
-
-            except Exception as e:
-                print(f'Error making API request: {e}')
+        send_alert(Temp_value,Pressure_value,CO2_value)
     return HttpResponse("Stock updated")
 
 def add_stock(request):
@@ -90,7 +40,6 @@ def add_stock(request):
         Weight_value = request.POST.get('Weight')
         Date_of_harvest_value = request.POST.get('Date_of_harvest')
         Date_of_harvest_value = datetime.strptime(Date_of_harvest_value, '%Y-%m-%d')
-        # current_date = timezone.now().date()
         Est_date_of_exp_value = timedelta(days=182) + Date_of_harvest_value
 
         new_record = Wheat.objects.create(
@@ -103,8 +52,63 @@ def add_stock(request):
             Date_of_harvest=Date_of_harvest_value,
             Est_date_of_exp=Est_date_of_exp_value
         )
+        send_alert(Temp_value,Pressure_value,CO2_value)
     return HttpResponse("Stock added")
     
+
+def send_alert(Temp_value,Pressure_value,CO2_value):
+    temperature_threshold = 50
+    co2_threshold = 500
+    pressure_threshold = 500
+    if int(Temp_value) > temperature_threshold:
+        api_url = 'http://127.0.0.1:8000/alert/'
+        custom_message = 'Alert_Wheat_Temperature'
+        phone_number = '8073855979'
+
+        payload = {
+            'custom_message': custom_message,
+            'Phone': phone_number
+        }
+
+        try:
+            response = requests.get(api_url, params=payload)
+            print(f'API Response: {response.status_code} - {response.text}')
+
+        except Exception as e:
+            print(f'Error making API request: {e}')
+    if int(Pressure_value) > pressure_threshold:
+        api_url = 'http://127.0.0.1:8000/alert/'
+        custom_message = 'Alert_Wheat_Pressure'
+        phone_number = '8073855979'
+
+        payload = {
+            'custom_message': custom_message,
+            'Phone': phone_number
+        }
+
+        try:
+            response = requests.get(api_url, params=payload)
+            print(f'API Response: {response.status_code} - {response.text}')
+
+        except Exception as e:
+            print(f'Error making API request: {e}')
+    if int(CO2_value) > co2_threshold:
+        api_url = 'http://127.0.0.1:8000/alert/'
+        custom_message = 'Alert_Wheat_CO2_level'
+        phone_number = '8073855979'
+
+        payload = {
+            'custom_message': custom_message,
+            'Phone': phone_number
+        }
+
+        try:
+            response = requests.get(api_url, params=payload)
+            print(f'API Response: {response.status_code} - {response.text}')
+
+        except Exception as e:
+            print(f'Error making API request: {e}')
+
 def alerts(request):
     custom_message = request.GET.get('custom_message', None)
     Phone = request.GET.get('Phone', None)
